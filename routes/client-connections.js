@@ -17,6 +17,15 @@ function startServer(httpServer) {
 		},
 	};
 
+	function compileClientState(clientId, client) {
+		var nearPlayers = [];
+		for (var id in gameState.players) {
+			if (id !== clientId)
+				nearPlayers.push(gameState.players[id]);
+		}
+		return { me: client, players: nearPlayers, asteroids: gameState.asteroids };
+	}
+
 	function onSocketIOConnection(socket) {
 		console.log('got client connection');
 		socket.gameClient = {
@@ -28,15 +37,16 @@ function startServer(httpServer) {
 			socket.gameClient.authenticated = true;
 
 			gameState.players[socket.id] = { x: 5.0, y: 5.0 };
-			socket.emit('authenticated', { me: gameState.players[socket.id], asteroids: gameState.asteroids });
+			socket.emit('authenticated', compileClientState(socket.id, gameState.players[socket.id]));
 		});
 		socket.on('state_update', function (client_state) {
 			if (socket.gameClient.authenticated) {
 				console.log('got state update from client');
-				
+				gameState.players[socket.id] = client_state;
+				socket.emit('state_update', compileClientState(socket.id, gameState.players[socket.id]));
 			} else {
 				console.log('bad client');
-				socket.close();
+				socket.disconnect();
 			}
 		});
 	}

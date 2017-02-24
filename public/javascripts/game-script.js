@@ -20,13 +20,17 @@ function drawGame() {
 	ctx.fillRect(0, 0, 640, 400);
 
 	ctx.fillStyle = '#FF00FF';
-	ctx.fillRect(gameState.me.x, gameState.me.y, 20, 20);
+	ctx.fillRect(gameState.me.x - 10, gameState.me.y - 10, 20, 20);
 
 	for (var asteroid in gameState.asteroids) {
 		asteroid = gameState.asteroids[asteroid];
 		ctx.fillStyle = '#FFAA00';
-		ctx.fillRect(asteroid.x, asteroid.y, 20, 20);
-
+		ctx.fillRect(asteroid.x - 10, asteroid.y - 10, 20, 20);
+	}
+	for (var i = 0; i < gameState.players.length; i++) {
+		player = gameState.players[i];
+		ctx.fillStyle = '#00AAFF';
+		ctx.fillRect(player.x - 10, player.y - 10, 20, 20);
 	}
 }
 
@@ -46,11 +50,19 @@ function updateGame() {
 	}
 }
 
+function sendState() {
+	socket.emit('state_update', gameState.me);
+}
+
+function onStateUpdate (state) {
+	gameState = state;
+}
+
 function startClientGame(state) {
 	gameState = state;
-	socket.emit('state_update', clientState);
 
 	setInterval(updateGame, 30);
+	setInterval(sendState, 100);
 
 	$('#gameCanvas').keydown(function (e) {
 		var key = String.fromCharCode(e.keyCode);
@@ -67,6 +79,7 @@ function startClientConnection(username) {
 
 	socket = io.connect('/');
 	socket.on('authenticated', startClientGame);
+	socket.on('state_update', onStateUpdate);
 
 	socket.emit('authenticate', clientState);
 	$('#nameEntry').hide();
