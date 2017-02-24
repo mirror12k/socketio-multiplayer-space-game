@@ -1,5 +1,12 @@
 extends layout
 
+block scripts
+	script(type='text/javascript', src='/javascripts/jquery.min.js')
+	script(type='text/javascript', src='/socket.io/socket.io.js')
+	script(type='text/javascript', src='/javascripts/game-script.js')
+
 block content
-  h1= title
-  p Welcome to #{title}
+	div#gameContainer
+		div#nameEntry
+			input#username(type='text', placeholder='username')
+			button#nameEntryButton start game!
