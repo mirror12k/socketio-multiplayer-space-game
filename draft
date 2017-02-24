@@ -1,0 +1,34 @@
+
+a simple realtime multiplayer spaceship game
+top down 2d graphics
+mechanics
+	simple objectives of collecting minerals and returning them to spacestations
+	minerals are collected by pointing at them with a mouse cursor and clicking to instruct the ship to harvest them
+		harvest rate depends on ship and max storage of ship
+		more minerals makes the ship heavier, harder to accelerate
+	ships move directionally, with w and s indicating accelerate and slow, and a and d turn the ship left or right (with momentum always being forward)
+	firing is done by pointing to an enemy ship and clicking when an aiming reticle appears
+	a small minimap of dots is shown to the user so they can orient themselves in near-space
+	an arrow is always shown on them minimap of where the station is located relative to the user
+	to differentiate each other, users can choose the hex color of their ship
+
+multiplayer support is done through a realtime communications stack:
+	nodejs/expressjs/jade/socket.io/client-side javascript
+
+a chat box will be displayed so users can chat
+
+to join, users simply have to type their name and connect with it
+upon joining, users get a spaceship and are placed in a random location near the station
+
+
+game updates are performed by the user sending their inputs to the server side where the server processes their inputs
+the server then sends back a respective game state to the player with a list of all active ships on the screen, their positions and current forward speed, and all active radar dots.
+the server also sends any actions that are happening such as a frame of mineral harvesting, firing weapons, or firing thrusters from entities
+
+server state will be stored in a global array and processed on request from client
+	states are stored per ship with their state timestamp and momentum
+		when an update comes from the client, the state is fast-forwarded based on what the client was doing prior
+			ex: if the client was moving forward, their state would be updated to move forward for the current_timestamp - timestamp milliseconds
+		a state array of all nearby ships will be compiled and sent to the client
+			a client can then display the actual dynamic positions and movement of entities from their update frame
+
