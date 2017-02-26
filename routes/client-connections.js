@@ -32,7 +32,7 @@ function startServer(httpServer) {
 			authenticated: false,
 		};
 		socket.on('authenticate', function (data) {
-			console.log('got authentication from client as ' + data.username);
+			console.log('got authentication from client ' + data.username);
 			socket.gameClient.username = data.username;
 			socket.gameClient.authenticated = true;
 
@@ -41,7 +41,7 @@ function startServer(httpServer) {
 		});
 		socket.on('state_update', function (client_state) {
 			if (socket.gameClient.authenticated) {
-				console.log('got state update from client');
+				// console.log('got state update from client');
 				gameState.players[socket.id] = client_state;
 				socket.emit('state_update', compileClientState(socket.id, gameState.players[socket.id]));
 			} else {

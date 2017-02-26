@@ -34,24 +34,43 @@ function drawGame() {
 	}
 }
 
+function calculateHeading() {
+	var sx = 0, sy = 0;
+
+	if (keyState.A) {
+		sx = -4;
+	} else if (keyState.D) {
+		sx = 4;
+	}
+
+	if (keyState.W) {
+		sy = -4;
+	} else if (keyState.S) {
+		sy = 4;
+	}
+
+	return { sx: sx, sy: sy };
+}
+
 function updateGame() {
+	// console.log("debug keystate: ", keyState);
 	drawGame();
 
-	// console.log("debug keystate: ", keyState);
-	if (keyState.A) {
-		gameState.me.x -= 4;
-	} else if (keyState.D) {
-		gameState.me.x += 4;
-	}
-	if (keyState.W) {
-		gameState.me.y -= 4;
-	} else if (keyState.S) {
-		gameState.me.y += 4;
+	var heading = calculateHeading();
+	gameState.me.x += heading.sx;
+	gameState.me.y += heading.sy;
+
+	for (var i = 0; i < gameState.players.length; i++) {
+		player = gameState.players[i];
+		player.x += player.sx;
+		player.y += player.sy;
 	}
 }
 
 function sendState() {
-	socket.emit('state_update', gameState.me);
+	var heading = calculateHeading();
+	var state = { x: gameState.me.x, y: gameState.me.y, sx: heading.sx, sy: heading.sy, };
+	socket.emit('state_update', state);
 }
 
 function onStateUpdate (state) {
@@ -61,7 +80,7 @@ function onStateUpdate (state) {
 function startClientGame(state) {
 	gameState = state;
 
-	setInterval(updateGame, 30);
+	setInterval(updateGame, 1000 / 60);
 	setInterval(sendState, 100);
 
 	$('#gameCanvas').keydown(function (e) {
