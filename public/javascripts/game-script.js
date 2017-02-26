@@ -62,8 +62,13 @@ function updateGame() {
 
 	for (var i = 0; i < gameState.players.length; i++) {
 		player = gameState.players[i];
-		player.x += player.sx;
-		player.y += player.sy;
+		if (player.frameUpdate >= 2) {
+			console.log('moving player');
+			player.x += player.sx;
+			player.y += player.sy;
+		} else {
+			player.frameUpdate += 1;
+		}
 	}
 }
 
@@ -73,8 +78,17 @@ function sendState() {
 	socket.emit('state_update', state);
 }
 
-function onStateUpdate (state) {
-	gameState = state;
+function onStateUpdate (new_state) {
+	for (var i = 0; i < new_state.players.length; i++) {
+		player = new_state.players[i];
+		if (gameState.players[i] && gameState.players[i].sx === player.sx && gameState.players[i].sy === player.sy) {
+			console.log('keeping frameUpdate state for player', i);
+			player.frameUpdate = gameState.players[i].frameUpdate;
+		} else {
+			player.frameUpdate = 0;
+		}
+	}
+	gameState = new_state;
 }
 
 function startClientGame(state) {
