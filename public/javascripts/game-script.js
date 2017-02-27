@@ -33,11 +33,83 @@ function drawGame() {
 	var canvas = $('#gameCanvas')[0];
 	var ctx = canvas.getContext('2d');
 
+	var me = gameState.me;
+
 	ctx.fillStyle = '#FFFFFF';
 	ctx.fillRect(0, 0, 640, 400);
 
 	ctx.fillStyle = '#FF00FF';
-	ctx.fillRect(gameState.me.x - 10, gameState.me.y - 10, 20, 20);
+	ctx.fillRect(me.x - 10, me.y - 10, 20, 20);
+
+	if (me.action === 'mining' && gameState.asteroids[me.targetID]) {
+		var asteroid = gameState.asteroids[me.targetID];
+		ctx.fillStyle = '#AF0';
+		ctx.beginPath();
+		ctx.moveTo(me.x, me.y);
+		ctx.lineTo(asteroid.x - asteroid.size,asteroid.y - asteroid.size);
+		ctx.lineTo(asteroid.x - asteroid.size,asteroid.y + asteroid.size);
+		ctx.closePath();
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.moveTo(me.x, me.y);
+		ctx.lineTo(asteroid.x - asteroid.size,asteroid.y + asteroid.size);
+		ctx.lineTo(asteroid.x + asteroid.size,asteroid.y + asteroid.size);
+		ctx.closePath();
+		ctx.fill();
+		
+		ctx.beginPath();
+		ctx.moveTo(me.x, me.y);
+		ctx.lineTo(asteroid.x + asteroid.size,asteroid.y + asteroid.size);
+		ctx.lineTo(asteroid.x + asteroid.size,asteroid.y - asteroid.size);
+		ctx.closePath();
+		ctx.fill();
+		
+		ctx.beginPath();
+		ctx.moveTo(me.x, me.y);
+		ctx.lineTo(asteroid.x + asteroid.size,asteroid.y - asteroid.size);
+		ctx.lineTo(asteroid.x - asteroid.size,asteroid.y - asteroid.size);
+		ctx.closePath();
+		ctx.fill();
+	}
+
+	for (var i = 0; i < gameState.players.length; i++) {
+		var player = gameState.players[i];
+		ctx.fillStyle = '#0AF';
+		ctx.fillRect(player.x - 10, player.y - 10, 20, 20);
+
+		if (player.action === 'mining' && gameState.asteroids[player.targetID]) {
+			var asteroid = gameState.asteroids[player.targetID];
+			ctx.fillStyle = '#AF0';
+			ctx.beginPath();
+			ctx.moveTo(player.x, player.y);
+			ctx.lineTo(asteroid.x - asteroid.size,asteroid.y - asteroid.size);
+			ctx.lineTo(asteroid.x - asteroid.size,asteroid.y + asteroid.size);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.moveTo(player.x, player.y);
+			ctx.lineTo(asteroid.x - asteroid.size,asteroid.y + asteroid.size);
+			ctx.lineTo(asteroid.x + asteroid.size,asteroid.y + asteroid.size);
+			ctx.closePath();
+			ctx.fill();
+			
+			ctx.beginPath();
+			ctx.moveTo(player.x, player.y);
+			ctx.lineTo(asteroid.x + asteroid.size,asteroid.y + asteroid.size);
+			ctx.lineTo(asteroid.x + asteroid.size,asteroid.y - asteroid.size);
+			ctx.closePath();
+			ctx.fill();
+			
+			ctx.beginPath();
+			ctx.moveTo(player.x, player.y);
+			ctx.lineTo(asteroid.x + asteroid.size,asteroid.y - asteroid.size);
+			ctx.lineTo(asteroid.x - asteroid.size,asteroid.y - asteroid.size);
+			ctx.closePath();
+			ctx.fill();
+		}
+	}
 
 	for (var asteroidID in gameState.asteroids) {
 		var asteroid = gameState.asteroids[asteroidID];
@@ -51,12 +123,6 @@ function drawGame() {
 		ctx.strokeStyle = '#00AA44';
 		ctx.lineWidth = 3;
 		ctx.strokeRect(asteroid.x - asteroid.size - 5, asteroid.y - asteroid.size - 5, asteroid.size * 2 + 10, asteroid.size * 2 + 10);
-	}
-
-	for (var i = 0; i < gameState.players.length; i++) {
-		var player = gameState.players[i];
-		ctx.fillStyle = '#00AAFF';
-		ctx.fillRect(player.x - 10, player.y - 10, 20, 20);
 	}
 }
 
@@ -89,7 +155,7 @@ function updateGame() {
 	for (var i = 0; i < gameState.players.length; i++) {
 		var player = gameState.players[i];
 		if (player.frameUpdate >= 2) {
-			console.log('moving player');
+			// console.log('moving player');
 			player.x += player.sx;
 			player.y += player.sy;
 		} else {
@@ -117,7 +183,7 @@ function onStateUpdate (new_state) {
 	for (var i = 0; i < new_state.players.length; i++) {
 		var player = new_state.players[i];
 		if (gameState.players[i] && gameState.players[i].sx === player.sx && gameState.players[i].sy === player.sy) {
-			console.log('keeping frameUpdate state for player', i);
+			// console.log('keeping frameUpdate state for player', i);
 			player.frameUpdate = gameState.players[i].frameUpdate;
 		} else {
 			player.frameUpdate = 0;

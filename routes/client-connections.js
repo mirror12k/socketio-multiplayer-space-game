@@ -46,7 +46,7 @@ function startServer(httpServer) {
 				if (clientState.action === 'mining') {
 					var asteroid = gameState.asteroids[clientState.targetID];
 					if (asteroid) {
-						asteroid.size -= 1;
+						asteroid.size -= 0.25;
 						if (asteroid.size < 3) {
 							delete gameState.asteroids[clientState.targetID];
 						}
