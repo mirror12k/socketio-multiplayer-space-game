@@ -36,7 +36,7 @@ function drawGame() {
 	var me = gameState.me;
 
 	ctx.fillStyle = '#FFFFFF';
-	ctx.fillRect(0, 0, 640, 400);
+	ctx.fillRect(0, 0, 640, 480);
 
 	ctx.fillStyle = '#FF00FF';
 	ctx.fillRect(me.x - 10, me.y - 10, 20, 20);
