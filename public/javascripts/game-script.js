@@ -15,6 +15,7 @@ var keyState = {
 var mouseState = {
 	x: -1,
 	y: -1,
+	buttonDown: false,
 };
 
 function findNearAsteroid(x, y) {
@@ -100,6 +101,15 @@ function updateGame() {
 function sendState() {
 	var heading = calculateHeading();
 	var state = { x: gameState.me.x, y: gameState.me.y, sx: heading.sx, sy: heading.sy, };
+
+	if (mouseState.buttonDown) {
+		var asteroid = findNearAsteroid(mouseState.x, mouseState.y);
+		if (asteroid) {
+			state.action = 'mining';
+			state.targetID = asteroid.id;
+		}
+
+	}
 	socket.emit('state_update', state);
 }
 
@@ -125,14 +135,16 @@ function startClientGame(state) {
 	$('#gameCanvas').keydown(function (e) {
 		var key = String.fromCharCode(e.keyCode);
 		keyState[key] = true;
-	});
-	$('#gameCanvas').keyup(function (e) {
+	}).keyup(function (e) {
 		var key = String.fromCharCode(e.keyCode);
 		keyState[key] = false;
-	});
-	$('#gameCanvas').mousemove(function(event) {
+	}).mousemove(function(event) {
 		mouseState.x = event.offsetX;
 		mouseState.y = event.offsetY;
+	}).mouseup(function() {
+		mouseState.buttonDown = false;
+	}).mousedown(function() {
+		mouseState.buttonDown = true;
 	});
 }
 
@@ -148,11 +160,9 @@ function startClientConnection(username) {
 }
 
 $(function () {
-
 	$('#nameEntryButton').click(function (e) {
 		e.preventDefault();
 		var username = $('#username').val();
 		startClientConnection(username);
 	});
-
 });

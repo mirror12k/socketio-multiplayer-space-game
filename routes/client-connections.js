@@ -11,9 +11,9 @@ function startServer(httpServer) {
 	var gameState = {
 		players: {},
 		asteroids: {
-			1: { x: 100, y: 100, size: 10 },
-			2: { x: 200, y: 150, size: 15 },
-			3: { x: 100, y: 300, size: 30 },
+			1: { id: 1, x: 100, y: 100, size: 10 },
+			2: { id: 2, x: 200, y: 150, size: 15 },
+			3: { id: 3, x: 100, y: 300, size: 30 },
 		},
 	};
 
@@ -39,10 +39,19 @@ function startServer(httpServer) {
 			gameState.players[socket.id] = { x: 5.0, y: 5.0 };
 			socket.emit('authenticated', compileClientState(socket.id, gameState.players[socket.id]));
 		});
-		socket.on('state_update', function (client_state) {
+		socket.on('state_update', function (clientState) {
 			if (socket.gameClient.authenticated) {
 				// console.log('got state update from client');
-				gameState.players[socket.id] = client_state;
+				gameState.players[socket.id] = clientState;
+				if (clientState.action === 'mining') {
+					var asteroid = gameState.asteroids[clientState.targetID];
+					if (asteroid) {
+						asteroid.size -= 1;
+						if (asteroid.size < 3) {
+							delete gameState.asteroids[clientState.targetID];
+						}
+					}
+				}
 				socket.emit('state_update', compileClientState(socket.id, gameState.players[socket.id]));
 			} else {
 				console.log('bad client');
