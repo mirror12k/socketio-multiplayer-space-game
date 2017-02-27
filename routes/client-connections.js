@@ -11,9 +11,9 @@ function startServer(httpServer) {
 	var gameState = {
 		players: {},
 		asteroids: {
-			1: { x: 100, y: 100 },
-			2: { x: 200, y: 150 },
-			3: { x: 100, y: 300 },
+			1: { x: 100, y: 100, size: 10 },
+			2: { x: 200, y: 150, size: 15 },
+			3: { x: 100, y: 300, size: 30 },
 		},
 	};
 
