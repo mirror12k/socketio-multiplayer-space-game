@@ -7,8 +7,8 @@ A very basic prototype of a realtime multiplayer space game. Built on a stack of
 ## Installation
 Make sure you have NodeJS and npm installed.
 Clone this repository.
-Inside the repository run '''npm install'''.
-Then start the server with '''npm start'''.
+Inside the repository run `npm install`.
+Then start the server with `npm start`.
 Goto http://localhost:3000/ in your favorite browser to play it!
 
 ## Basics
